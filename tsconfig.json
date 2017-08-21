@@ -1,13 +1,18 @@
 {
     "compilerOptions": {
-        "lib": ["dom", "es6"],
         "target": "es5",
+
+        "lib": ["dom", "es6"],
+        "types": ["node"],
+
         "strict": true,
         "alwaysStrict": true,
 
         "module": "umd",
 
         "outDir": "dist",
-        "declaration": true
+        "declaration": true,
+
+        "experimentalDecorators": true
     }
 }
