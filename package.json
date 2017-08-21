@@ -1,6 +1,6 @@
 {
   "name": "native-clone",
-  "version": "0.1.0-dev.4",
+  "version": "0.1.0-dev.5",
   "homepage": "https://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/10916838#10916838",
   "repository": "jeremybanks/native-clone",
   "author": "Jeremy Banks <_@jeremy.ca> (https://jeremy.ca)",
