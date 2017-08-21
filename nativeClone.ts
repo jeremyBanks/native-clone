@@ -1,18 +1,18 @@
-const cloneSyncFallback = <T>(x):T => {
+const cloneSyncFallback = <T>(x:T):T => {
   // we don't polyfill; if there's no native implementation we have to throw.
   throw new Error('no native structured clone implementation found');
 };
 export let cloneSync = cloneSyncFallback;
 export const canCloneSync = () => cloneAsync !== cloneAsyncFallback;
 
-const cloneAsyncFallback = async <T>(x):Promise<T> => {
+const cloneAsyncFallback = async <T>(x:T):Promise<T> => {
   // promisify the sync implementation, or at least the not-available error.
   return cloneSync(x);
 }
 export let cloneAsync = cloneAsyncFallback;
 export const canCloneAsync = () => cloneSync !== cloneSyncFallback || canCloneSync();
 
-const asyncImplementationFactories:(() => undefined|(<T>(x) => Promise<T>))[] = [
+const asyncImplementationFactories:(() => undefined|(<T>(x:T) => Promise<T>))[] = [
   () => { // MessageChannel implementation
     if (typeof MessageChannel !== 'function') return;
     if (typeof Map !== 'function') return;
@@ -26,14 +26,14 @@ const asyncImplementationFactories:(() => undefined|(<T>(x) => Promise<T>))[] = 
 
     outPort.onmessage = event => {
       const [key, value] = event.data;
-      const resolve = pendingClones.get(key);
+      const resolve = pendingClones.get(key) as (clonedValue: any) => void;
       resolve(value);
-      this.pendingClones.delete(key);
+      pendingClones.delete(key);
     };
 
     outPort.start();
 
-    return <T>(value):Promise<T> => {
+    return <T>(value:T):Promise<T> => {
       return new Promise(resolve => {
         const key = nextIndex++;
         pendingClones.set(key, resolve);
@@ -48,7 +48,7 @@ const asyncImplementationFactories:(() => undefined|(<T>(x) => Promise<T>))[] = 
 
     const pendingClones: Map<string, (clonedValue: any) => void> = new Map;
 
-    let prefix = `cloner-{Math.random() * 2147483647 ^ +new Date()}`;
+    let prefix = `cloner-${Math.random() * 2147483647 ^ +new Date()}`;
     let nextIndex: number = 0;
 
     self.addEventListener('message', event => {
@@ -61,14 +61,14 @@ const asyncImplementationFactories:(() => undefined|(<T>(x) => Promise<T>))[] = 
       if (!resolve) return;
 
       resolve(value);
-      this.pendingClones.delete(key);
+      pendingClones.delete(key);
 
       event.stopImmediatePropagation();
     });
 
-    return <T>(value):Promise<T> => {
+    return <T>(value:T):Promise<T> => {
       return new Promise(resolve => {
-        const key = `{prefix}-{nextIndex++}`;
+        const key = `${prefix}-${nextIndex++}`;
         pendingClones.set(key, resolve);
         self.postMessage([key, value], '*');
       });
@@ -76,7 +76,7 @@ const asyncImplementationFactories:(() => undefined|(<T>(x) => Promise<T>))[] = 
   }
 ];
 
-const syncImplementationFactories:(() => undefined|(<T>(x) => T))[] = [
+const syncImplementationFactories:(() => undefined|(<T>(x:T) => T))[] = [
     // there are no implementations
 ];
 

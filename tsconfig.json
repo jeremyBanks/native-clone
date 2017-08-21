@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "lib": ["dom", "es6"],
+        "target": "es5",
+        "strict": true,
+        "alwaysStrict": true,
+
+        "module": "umd",
+
+        "outDir": "dist",
+        "declaration": true
+    }
+}
